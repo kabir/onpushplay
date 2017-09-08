@@ -6,11 +6,15 @@ import {List} from 'immutable';
   template: `
     <body>
     <p>Test</p>
-    <div style="width: 500px; border: solid 1px black; overflow: scroll;">
+    <app-headers
+      [states]="states"
+      [leftOffset]="leftOffset"></app-headers>
+    <div style="width: 500px; border: solid 1px black; overflow: scroll;"
+         (scroll)="onScrollX($event)">
       <table>
         <tr style="vertical-align: top">
           <td *ngFor="let state of states ; let i = index " style="width: 150px; min-width: 150px;">
-            <app-state [stateIndex]="i" [state]="state" 
+            <app-state [stateIndex]="i" [state]="state"
                        (moveItemEvent)="onMoveItemEvent($event)"
                        (moveStateEvent)="onMoveStateEvent($event)"></app-state>
           </td>
@@ -18,11 +22,11 @@ import {List} from 'immutable';
       </table>
     </div>
     </body>
-    `
+  `
 })
 export class AppComponent {
   states: List<List<Item>> = List<List<Item>>();
-
+  leftOffset = '0px';
   constructor() {
     this.states = this.states.withMutations(mutable => {
       mutable.push(List<Item>([new Item('A'), new Item('B'), new Item('C')]));
@@ -57,7 +61,12 @@ export class AppComponent {
       this.states = this.states.remove(event.from);
       this.states = this.states.insert(event.to, state);
     }
+  }
 
+  onScrollX(event: Event) {
+    const boardLeftOffset: number = event.target['scrollLeft'] * -1;
+    this.leftOffset = boardLeftOffset + 'px';
+    console.log('Setting offset to ' + this.leftOffset);
   }
 }
 
@@ -164,11 +173,11 @@ export class ItemComponent implements OnDestroy, OnInit {
 
 
   ngOnInit(): void {
-    console.log(`Init ${this.item.name}`);
+    // console.log(`Init ${this.item.name}`);
   }
 
   ngOnDestroy(): void {
-    console.log(`Destroy ${this.item.name}`);
+    // console.log(`Destroy ${this.item.name}`);
   }
 }
 
@@ -183,6 +192,65 @@ export class Item {
 
   constructor(name: string) {
     this.name = name;
+  }
+}
+
+@Component({
+  selector: 'app-headers',
+  template: `
+    <div style="width: 500px; border: solid 1px black; overflow: hidden" [ngStyle]="{left: leftOffset}">
+      <table>
+        <tr>
+          <td [attr.colspan]="states.size">{{lastChanged()}}</td>
+        </tr>
+        <tr style="vertical-align: top ; overflow: hidden ;  white-space: nowrap">
+          <app-header *ngFor="let state of states ; let i = index "
+                      [state]="i">
+          </app-header>
+        </tr>
+      </table>
+    </div>
+  `
+})
+export class HeadersComponent {
+  @Input()
+  states: List<Item> = List<Item>();
+  private _leftOffset: string;
+
+
+  @Input()
+  set leftOffset(value: string) {
+    console.log('Received offset to ' + this._leftOffset);
+    this._leftOffset = value;
+  }
+
+  get leftOffset(): string {
+    return this._leftOffset;
+  }
+
+  lastChanged() {
+    const date: Date = new Date();
+    return date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
+  }
+}
+
+@Component({
+  selector: 'app-header',
+  template: `
+      <td style="width: 150px; min-width: 150px; text-align: center">
+        <div>S-{{state}}</div>
+        <div>{{lastChanged()}}</div>
+      </td>
+  `
+})
+export class HeaderComponent {
+  @Input()
+  state: number;
+
+
+  lastChanged() {
+    const date: Date = new Date();
+    return date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
   }
 }
 
