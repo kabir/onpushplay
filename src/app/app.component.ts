@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {List} from 'immutable';
 
 @Component({
@@ -136,7 +136,7 @@ export class MoveStateEvent {
   `,
   styles: [``]
 })
-export class ItemComponent {
+export class ItemComponent implements OnDestroy, OnInit {
   @Input()
   stateIndex: number;
   @Input()
@@ -160,6 +160,15 @@ export class ItemComponent {
   onRight(event: MouseEvent) {
     event.preventDefault();
     this.moveItemEvent.emit(new MoveItemEvent(this.item, this.stateIndex, this.stateIndex + 1));
+  }
+
+
+  ngOnInit(): void {
+    console.log(`Init ${this.item.name}`);
+  }
+
+  ngOnDestroy(): void {
+    console.log(`Destroy ${this.item.name}`);
   }
 }
 
