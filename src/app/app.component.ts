@@ -13,7 +13,7 @@ import {List, Map} from 'immutable';
          (scroll)="onScrollX($event)">
       <table>
         <tr style="vertical-align: top">
-          <td *ngFor="let state of states ; let i = index " style="width: 150px; min-width: 150px;">
+          <td *ngFor="let state of states ; trackBy: tableTrackBy; let i = index " style="width: 150px; min-width: 150px;">
             <app-state [stateIndex]="i" [state]="state" [items]="items"
                        (moveItemEvent)="onMoveItemEvent($event)"
                        (moveStateEvent)="onMoveStateEvent($event)"
@@ -100,6 +100,13 @@ export class AppComponent {
     this.leftOffset = boardLeftOffset + 'px';
     console.log('Setting offset to ' + this.leftOffset);
   }
+
+  tableTrackBy(index: number, key: string) {
+    // console.log('tracking ' + key);
+    return index;
+  }
+
+
 }
 
 @Component({
@@ -113,7 +120,7 @@ export class AppComponent {
         <a href="right" (click)="onRight($event)">&gt;</a>
       </li>
       <li style="background-color: aliceblue">{{lastChanged()}}</li>
-      <app-item *ngFor="let itemKey of state"
+      <app-item *ngFor="let itemKey of state ;trackBy: itemTrackBy"
                 [stateIndex]="stateIndex"
                 [item]="items.get(itemKey)"
                 (moveItemEvent)="onMoveItemEvent($event)"
@@ -123,7 +130,7 @@ export class AppComponent {
   `,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class StateComponent {
+export class StateComponent implements OnInit, OnDestroy {
   @Input()
   stateIndex: number;
   @Input()
@@ -161,6 +168,19 @@ export class StateComponent {
   lastChanged() {
     const date: Date = new Date();
     return date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
+  }
+
+  itemTrackBy(index: number, key: string) {
+    // console.log('tracking ' + key);
+    return key;
+  }
+
+  ngOnInit(): void {
+    console.log(`Init ${this.stateIndex}`);
+  }
+
+  ngOnDestroy(): void {
+    console.log(`Destroy ${this.stateIndex}`);
   }
 
 }
@@ -223,11 +243,11 @@ export class ItemComponent implements OnDestroy, OnInit {
 
 
   ngOnInit(): void {
-    // console.log(`Init ${this.item.name}`);
+    console.log(`Init ${this.item.name}`);
   }
 
   ngOnDestroy(): void {
-    // console.log(`Destroy ${this.item.name}`);
+    console.log(`Destroy ${this.item.name}`);
   }
 }
 
