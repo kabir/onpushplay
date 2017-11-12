@@ -6,10 +6,12 @@ import { HttpModule } from '@angular/http';
 import {AppComponent, HeaderComponent, HeadersComponent} from './app.component';
 import {StateComponent} from './app.component';
 import {ItemComponent} from './app.component';
+import {FlexboxComponent} from './flexbox.component';
 
 @NgModule({
   declarations: [
     AppComponent,
+    FlexboxComponent,
     HeaderComponent,
     HeadersComponent,
     ItemComponent,
@@ -21,6 +23,6 @@ import {ItemComponent} from './app.component';
     HttpModule
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [FlexboxComponent]
 })
 export class AppModule { }
